@@ -21,9 +21,15 @@ __There is only one required argument ->__
 **Additional Arguments:**
 
 `-t "Target Name"` is not so much required, as it will default to your current character. __Initiative Sensitive__. 
+
 `-i` Will ignore proficiency requirements and treat the creature you are giving the weapon to as proficient. 
+
 `-b` will add bonus to hit. __Supports Dice__
+
 `-d` will add a bonus to damage. __Supports Dice and Damage__
+
 `-mb` will add a magical bonus, increasing (or decreasing) the attack and damage __Supports Dice and Damage__. 
+
 `-metal | -m` will allow you to pick a metal typeing. (silver is the only important one here.)
+
 `-name` allows you to give the item a name rather than what will be automatically given to it. 
