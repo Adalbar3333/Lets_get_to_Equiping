@@ -2,12 +2,12 @@
 This is a workshop on Avrae's Dashobard.
 You can PM me if you have any questions, but I prefer you use the [GitHub](https://github.com/Adalbar3333/Lets_get_to_Equiping/) to report an issue.
 
-## Basic Information 
+### Basic Information 
 This alias is a tool for DM's and Players alike to add Weapons and Armor to their characters and monsters. <br>
 Say your character grabs an Orc's Greataxe, but does not have one in their inventory, well now you can add it.<br>
 Say you want to have a goblin in magical full plate wielding a Glaive, well now you can! 
 
-### `!equip`
+## `!equip`
 #### Equiping Weapons
 This is a DM's, and Players tool to set up weapons that a monster generally does not have. For example, with !equip, you can have a goblin with a Flame Tongue!
 #### Homebrew svar for Weapons
