@@ -25,10 +25,10 @@ This is a DM's, and Players tool to set up weapons that a monster generally does
 #### There is only one required argument ->
 ##### "Weapon Name" | -equip "Weapon Name" | -e "Weapon Name" is used for selecting the weapon you wish to use.
 #### Additional Arguments:
--t "Target Name" is not so much required, as it will default to your current character. Initiative Sensitive.
--i Will ignore proficiency requirements and treat the creature you are giving the weapon to as proficient.
--b will add bonus to hit. Supports Dice
--d will add a bonus to damage. Supports Dice and Damage
--mb will add a magical bonus, increasing (or decreasing) the attack and damage Supports Dice and Damage.
--metal | -m will allow you to pick a metal typeing. (silver is the only important one here.)
--name allows you to give the item a name rather than what will be automatically given to it.
+-t "Target Name" is not so much required, as it will default to your current character. __Initiative Sensitive__.<br>
+-i Will ignore proficiency requirements and treat the creature you are giving the weapon to as proficient.<br>
+-b will add bonus to hit. __Supports Dice__ <br>
+-d will add a bonus to damage. __Supports Dice and Damage__ <br>
+-mb will add a magical bonus, increasing (or decreasing) the attack and damage Supports Dice and Damage. <br>
+-metal | -m will allow you to pick a metal typeing. (silver is the only important one here.) <br>
+-name allows you to give the item a name rather than what will be automatically given to it. <br>
