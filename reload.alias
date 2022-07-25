@@ -1,0 +1,113 @@
+multiline 
+<drac2>
+ch = character()
+A = &ARGS&
+a = argparse(A)
+CVAR = 'reloadableWeapons'
+cvar = load_json(get(CVAR, "[]"))
+requestedCC = a.last('c', '&1&')
+allCCs = ch.consumables 
+adv = a.adv(boolwise=True)
+bonus = (a.join('b', '+', '').strip('+') if a.get('b') else '')
+DC = a.last('dc', 10, int)
+
+if not a.get('add') or a.get('help', a.get('h', a.get('?'))) and weapon:
+	cc = None
+	for CC in allCCs:
+		if requestedCC in CC.name.lower() and 'bullets' not in CC.name.lower():
+			cc = CC.name
+
+	if not cc:
+		text = f''' -title "Sorry! We couldn't find a CC by that name!" -desc "Sorry, but there is no Custom Counter by the name of {requestedCC}! Please check your CC's via `{ctx.prefix}cc` and try again!"'''
+		return f'''!embed {text}'''
+	weapon = None
+	for lookingFor in cvar:
+		if lookingFor['name'] == cc.replace(' Magazine',''):
+			weapon = lookingFor
+			break 
+	
+	if ch.get_cc(cc) == ch.get_cc_max(cc):
+			text = f''' -title "{name}'s {cc} is Fully Loaded!"'''
+			text += f''' -desc "What are you doing?! Your weapon is loaded! Get to shootin!"'''
+	if not a.get('quick'):
+		ch.cc(cc).reset()
+		if (ch.get_cc_max(f'{cc.replace("Magazine","Bullets")}')-ch.get_cc(f'{cc.replace("Magazine","Bullets")}')) < ch.get_cc(cc):
+			text = f''' -title "{name} partially reloaded their {cc}"'''
+			howMuch = (ch.get_cc_max(f'{cc.replace("Magazine","Bullets")}')-ch.get_cc(f'{cc.replace("Magazine","Bullets")}'))
+			ch.mod_cc(cc,+howMuch)
+			ch.mod_cc(f'{cc.replace("Magazine","Bullets")}',-howMuch)
+			text += f''' -f "{cc} has been reloaded by {howMuch}! You can now fire your {cc} again!"'''
+			text += f''' -f "{cc}|{ch.cc(cc).desc}\n{ch.cc_str(cc)}\nAmmunition: {ch.get_cc(f'{cc.replace("Magazine","Bullets")}')}"'''
+			return f'''!embed {text}'''
+		else:
+			text = f''' -title "{name} Reloaded their {cc}!"'''
+			text += f''' -f "{cc} has been reloaded! You can now fire your {cc} again!"'''
+			ch.mod_cc(f'{cc.replace("Magazine","Bullets")}', -ch.get_cc_max(cc))
+			text += f''' -f "{cc}|{ch.cc(cc).desc}\n{ch.cc_str(cc)}"'''
+			return f'''!embed {text}'''
+	else:
+		text = ''
+		qrc = vroll(f'{character().skills["sleightOfHand"].d20(adv)}'+('+' + bonus if bonus else ''))
+		if qrc.total >= DC:
+			text += f''' -f "Your {cc} has been reloaded! You can now fire your {cc} again!"'''
+			dcText = f' -footer "Success!"'
+			ch.cc(cc).reset()
+		else:
+			text += f''' -f "Your {cc} Has not been! And now it's jammed!!!"'''
+			dcText = f' -footer "Failure!"'
+			cvar.update({"name":f"{weapon}","jammed":True})
+			ch.set_cvar(CVAR, cvar)
+		text = f''' -title "{name} Tries to Quickly Reload their {cc}!"'''
+		text += f''' -f "DC{DC}|{qrc}"'''
+		text += f''' -f "{cc}|{ch.cc(cc).desc}\n{ch.cc_str(cc)}"'''
+		return f'''!embed {text+dcText}'''
+if a.get('add'):
+	weapon = a.last('name', a.last('n'))
+	if str(weapon) in str(cvar):
+		text = f''' -title "You already have a weapon by that name!"'''
+		text += f''' -desc "You already have a weapon ready to use called {weapon}! You can see it's information via `{ctx.prefix}cc '{weapon}'`"'''
+		cc = f'{weapon} Magazine'
+		text += f''' -f "{weapon}|{ch.cc_str(cc)}"'''
+		return f'!embed {text}'
+	else:
+		ammunition = a.last('mag', 1)
+		ch.create_cc_nx(f'{weapon} Bullets', 0,desc=f'''These are the bullets you use for your {weapon}. You can have an infinite amount of ammo in this bag. If you try to reload your {weapon} and you have no ammunition, you will not be able to reload.''')
+		mBonus = a.last('mb', None)
+		damage = a.last('d', None, str)
+		if not weapon or not damage:
+			text = f''' -title "Try Again!"'''
+			text += f''' -desc "Sorry {name}, but you forgot some things! You need the following things:\n`-name` to give your weapon a name\n`-d #d#` to give your weapon some damage dice\n`-ammo #` to determine the amount of ammo the weapon can hold.\n`-mb #` to determine the magical bonus."'''
+			return f'!embed {text}'
+		ch.create_cc_nx(f'{weapon.title()} Magazine',minVal=0,maxVal=int(ammunition),dispType="bubble",desc=f'{weapon}: Reload Property\nAs an action, you can reload your weapon with more ammunition. Instead, you can reload as a bonus action requiring a Sleight of Hand check with a DC determined by the DM. On a fail, your gun will jam. If jammed, you must make another check but with an Athletics check instead.')
+		newWeapon = {"name":f"{weapon.title()}", "jammed":"False"}
+		cvar.append(newWeapon)
+		ch.set_cvar(CVAR, f'{dump_json(cvar)}')
+		newAttack = f'''name: "{weapon}{f' +{mBonus}' if mBonus else ''}"
+automation:
+  - type: target
+    meta: []
+    target: each
+    effects:
+      - type: counter
+        meta: []
+        counter: "{weapon.title()} Magazine"
+        amount: "1"
+        allowOverflow: false
+        errorBehaviour: raise
+      - type: attack
+        meta: []
+        hit:
+          - type: damage
+            meta: []
+            damage: "{damage}+{dexterityMod}{f'+{mBonus}' if mBonus else ''}[piercing]"
+            overheal: false
+        miss: []
+        attackBonus: dexterityMod+proficiencyBonus+{mBonus if mBonus else "0"}
+_v: 2
+proper: true
+verb: Fires Their
+phrase: "*Kchhsssshhh*"'''
+		text = f''' -title "New Attack Added!"'''
+		text += f''' -desc "You can now make attacks with `{ctx.prefix}a '{weapon}'`! In addition, you can reload the weapon via `{ctx.prefix}reload '{weapon}'`. "'''
+		return f'!a import {newAttack}\n!embed {text}'
+</drac2>

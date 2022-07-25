@@ -14,14 +14,14 @@ ReqArmor = A.last("equip", A.last("e")) if "equip" in A or "e" in A else '&1&'
 ReqMetal = A.last('m', A.last('metal')) if "m" in A or "metal" in A else ""
 chosenArmor = None
 for armor in g.armors:
-	if ReqArmor and ReqArmor.lower() in armor.fName.lower():
+	if ReqArmor and ReqArmor.lower() in armor.name.lower():
 		chosenArmor = armor
 		break
 chosenMetal = None
 for metal in mg['metals']:
-    if ReqMetal and ReqMetal.lower() in metal.lower():
-        chosenMetal = metal
-        break
+	if ReqMetal and ReqMetal.lower() in metal.lower():
+		chosenMetal = metal
+		break
 metalDesc = mg['metalsArmorDesc'][f'{chosenMetal}'] if chosenMetal else ""
 chosenMetalText = f'**{chosenMetal} Armor:** {metalDesc}' if chosenMetal else ""
 if not chosenArmor:
@@ -37,7 +37,7 @@ multiClassProfs = g.get('multiClassArmorProfs')
 MUCAPro = multiClassProfs.get(str(SC), "")
 # Obtaining Other Proficiencies from the cvar 'subclass'
 subclassProfs = g.get('subclassArmorProfs')
-SCAPro = subclassProfs.get(get("subclasses"), "")
+SCAPro = subclassProfs.get(get("subclass"), "")
 
 # Gets proficiencies from the 'feats' cvar 
 FPro = ['']
@@ -58,23 +58,23 @@ strReqText = '' if strReq == 0 else f'{target} meets the strength requirement to
 if 'r' in '&1&' and not ReqArmor or 'remove' in '&1&' and not ReqArmor:
 	text += f''' -title "{target} gave no armor name!" -desc "{target} should supply a armor." -f "`{ctx.prefix}{ctx.alias} armor remove -e 'Armor Name' `" '''
 	return text 
-if A.last('equip', A.get('e')) and C.get_effect(armor.fName) and not A.get('r'):
-	text += f''' -title "{target} is already wearing {armor.fName}" -desc "It seems that {target} is already wearing {armor.fName}. It would be silly to wear another set, huh?" '''
+if A.last('equip', A.get('e')) and C.get_effect(armor.name) and not A.get('r'):
+	text += f''' -title "{target} is already wearing {armor.name}" -desc "It seems that {target} is already wearing {armor.name}. It would be silly to wear another set, huh?" '''
 	return text 
 
 if A.get("remove") or A.get("r"):
-	footerText = f"""Effect has been removed from {target}!""" if c and C.get_effect(chosenArmor.get('fName')) else f"""{target} is not wearing a {'' if chosenArmor.get('fName') == 'Shield' else 'set of'} {chosenArmor.get('fName')}""" if not C.get_effect(chosenArmor.get('fName')) else 'There is no Combat!'
-	text += f''' -title "{target} doffs a {'' if chosenArmor.get('fName') == 'Shield' else 'set of'} {chosenArmor.get('fName')}!" -desc "{target} is no longer wearing a {'' if chosenArmor.get('fName') == 'Shield' else 'set of'} {chosenArmor.get('fName')}." -footer "{footerText}" '''
-	if C.get_effect(chosenArmor.get('fName')):
-		C.remove_effect(chosenArmor.get('fName')) if c else ''
+	footerText = f"""Effect has been removed from {target}!""" if c and C.get_effect(chosenArmor.get('name')) else f"""{target} is not wearing a {'' if chosenArmor.get('name') == 'Shield' else 'set of'} {chosenArmor.get('name')}""" if not C.get_effect(chosenArmor.get('name')) else 'There is no Combat!'
+	text += f''' -title "{target} doffs a {'' if chosenArmor.get('name') == 'Shield' else 'set of'} {chosenArmor.get('name')}!" -desc "{target} is no longer wearing a {'' if chosenArmor.get('name') == 'Shield' else 'set of'} {chosenArmor.get('name')}." -footer "{footerText}" '''
+	if C.get_effect(chosenArmor.get('name')):
+		C.remove_effect(chosenArmor.get('name')) if c else ''
 	return text 
 if c and target != name:
 	if C.monster_name or target != name:
-		text += f''' -title "{C.name} has equipped an Armor: {f"""Magical {mbonus}""" if mbonus else ''} {chosenArmor.get('fName')}!" -desc "{C.name} is now wearing{f""" Magical {mbonus}""" if mbonus else ''} {chosenArmor.get('fName')}!" -f "{chosenArmor.get('fName')} Description|- {chosenArmor.get('desc')}\n{chosenMetalText}" -f "New AC|+{abonus}"'''
+		text += f''' -title "{C.name} has equipped an Armor: {f"""Magical {mbonus}""" if mbonus else ''} {chosenArmor.get('name')}!" -desc "{C.name} is now wearing{f""" Magical {mbonus}""" if mbonus else ''} {chosenArmor.get('name')}!" -f "{chosenArmor.get('name')} Description|- {chosenArmor.get('desc')}\n{chosenMetalText}" -f "New AC|+{abonus}"'''
 		if c:
-			text += f''' -footer "{C.name} already has {chosenArmor.get('fName')}"'''
-			if not C.get_effect(chosenArmor.get('fName')):
-				C.add_effect(f'''{(f"Magical {mbonus} " if {mbonus} else '')}{chosenArmor.get('fName')}''', f'''-ac {'+' if ReqArmor == "Shield" else ""}{abonus}''',desc = f'''{chosenArmor.get('desc')}{strReqText}\nNew AC: {abonus}''')
+			text += f''' -footer "{C.name} already has {chosenArmor.get('name')}"'''
+			if not C.get_effect(chosenArmor.get('name')):
+				C.add_effect(f'''{(f"Magical {mbonus} " if mbonus else '')}{chosenArmor.get('name')}''', f'''-ac {'+' if ReqArmor == "Shield" else ""}{abonus}''',desc = f'''{chosenArmor.get('desc')}{strReqText}\nNew AC: {abonus}''')
 				text += f''' -footer "Effect added to {C.name}"'''	
 	return text
 
@@ -84,15 +84,15 @@ elif "CR" not in C.levels:
 		profArgs = ''
 		proText = f"It is not certain if {target} is proficient. They are ignoring proficiency."
 	elif chosenArmor.get('armorType') in AllPro:
-		prof = f"{target} is proficient with {chosenArmor.get('fName')}."
+		prof = f"{target} is proficient with {chosenArmor.get('name')}."
 		profArgs = ''
-		proText = f"{target} is proficient with {chosenArmor.get('fName')}"
+		proText = f"{target} is proficient with {chosenArmor.get('name')}"
 	else:
-		prof = f"You are not proficient with {chosenArmor.get('fName')}.\n - You have disadvantage on any ability check, saving throw, or attack roll that involves Strength or Dexterity, and you can't cast spells."
+		prof = f"You are not proficient with {chosenArmor.get('name')}.\n - You have disadvantage on any ability check, saving throw, or attack roll that involves Strength or Dexterity, and you can't cast spells."
 		profArgs = ' -sdis str -sdis dex dis'
-		proText = f" - {target} is not proficient with {chosenArmor.get('fName')}!\n    - While wearing {chosenArmor.get('fName')}, you have disadvantage on any ability check, saving throw, or attack roll that involves Strength or Dexterity, and you can't cast spells." 
+		proText = f" - {target} is not proficient with {chosenArmor.get('name')}!\n    - While wearing {chosenArmor.get('name')}, you have disadvantage on any ability check, saving throw, or attack roll that involves Strength or Dexterity, and you can't cast spells." 
 	if c:
-		C.add_effect(f'''{f"Magical {mbonus} " if A.get("b") else ''}{chosenArmor.get('fName')}''', f'''-ac {'+' if "Shield" in chosenArmor.get('fName') else ""}{abonus}{profArgs}''',desc = f'''{chosenArmor.get('desc')}\n - {chosenMetal} Armor: {metalDesc}\n{proText}''')
-	text += f''' -title "{target} has equipped an Armor: {f"""Magical {mbonus}""" if mbonus else ''} {chosenArmor.get('fName')}" -desc "{target} is now wearing{f""" Magical {mbonus}""" if mbonus else ''} {chosenArmor.get('fName')}!" -f "{chosenArmor.get('fName')} Description|- {chosenArmor.get('desc')}\n**{chosenMetal} Armor:** {metalDesc}" -f """Proficiency|{proText}\n{strReqText}""" -f "New AC|+{abonus}"'''
+		C.add_effect(f'''{f"Magical {mbonus} " if A.get("b") else ''}{chosenArmor.get('name')}''', f'''-ac {'+' if "Shield" in chosenArmor.get('name') else ""}{abonus}{profArgs}''',desc = f'''{chosenArmor.get('desc')}\n - {chosenMetal} Armor: {metalDesc}\n{proText}''')
+	text += f''' -title "{target} has equipped an Armor: {f"""Magical {mbonus}""" if A.get('b') else ''} {chosenArmor.get('name')}" -desc "{target} is now wearing{f""" Magical {mbonus}""" if mbonus else ''} {chosenArmor.get('name')}!" -f "{chosenArmor.get('name')} Description|- {chosenArmor.get('desc')}\n**{chosenMetal} Armor:** {metalDesc}" -f """Proficiency|{proText}\n{strReqText}""" -f "New AC|+{abonus}"'''
 	return text
 </drac2>

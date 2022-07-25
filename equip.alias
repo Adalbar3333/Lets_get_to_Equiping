@@ -3,8 +3,16 @@ embed
 text = f''' -footer "{ctx.prefix}{ctx.alias} 'Weapon Name' | Adalbär#3333"'''
 A = argparse(&ARGS&)
 c = combat()
-target = A.last("t") if "t" in A else name
-C = c.get_combatant(target) if c else c.me if c else character()
+target = A.last("t") if "t" in A else name 
+C = character()
+if c:
+	if A.get('t'):
+		C = c.get_combatant(target)
+	elif not A.get('t') and not c.me:
+		C = character()
+	else:
+		C = c.me
+
 g = load_json(get_gvar('1cd661c5-88ba-424c-ac9b-1ec7784b2580'))
 g['weapons'] += load_json(get_svar("homebrewWeapon", "[]")) 
 weaponName = A.last('weapon', A.last('w', A.last('equip', A.last('e')))) if A else '&1&'
@@ -21,7 +29,7 @@ for weapon in g.weapons:
 	if ReqWeapon and ReqWeapon.lower() in weapon.name.lower():
 		chosenWeapon = weapon
 		break
-chosenMetal = None
+chosenMetal = ""
 for metal in g['metals']:
     if ReqMetal and ReqMetal.lower() in metal.lower():
         chosenMetal = metal
@@ -50,19 +58,20 @@ vowls = "an" if "aeiou" in chosenWeapon else "a"
 proficiencyBonusText = f''' -f "It is not Important~~~"'''
 
 if chosenWeapon.get('finesse'):
-	abilityBonus = max(C.stats('dexterity'), C.stats('strength'))
+	abilityBonus = max(C.stats.get_mod('dexterity'), C.stats.get_mod('strength'))
 if not chosenWeapon.get('finesse'):
 	abilityBonus = C.stats.get_mod('dexterity') if chosenWeapon.get('type') == "Ranged" else C.stats.get_mod('strength')
 # Sets Proficiency Bonus
 proficency = True if chosenWeapon.get('name') in ALLPro or chosenWeapon.get('prof') in ALLPro else False
-if not proficency:
-	proficiencyBonus = 0
-	proficiencyBonusText = f'''{target} does not have proficiency with {vowls} {chosenWeapon.get('name')}.'''
+if A.last('i') or A.get('pro'):
+	proficiencyBonus = C.stats.prof_bonus
+	proficiencyBonusText = f'''{target} is treated as proficient with this {chosenWeapon.get('name')}.'''
 elif proficency:
 	proficencyBonus = C.stats.prof_bonus
 	proficiencyBonusText = f'''{target} is proficient with {vowls} {chosenWeapon.get('name')}.'''
-elif A.last('i') or A.get('pro'):
-	proficiencyBonus = C.stats.prof_bonus
+elif not proficency:
+	proficiencyBonus = 0
+	proficiencyBonusText = f'''{target} does not have proficiency with {vowls} {chosenWeapon.get('name')}.'''
 else:
 	proficiencyBonus = 0
 	proficiencyBonusText = f'''{target} does not have proficiency with {vowls} {chosenWeapon.get('name')}.'''
@@ -74,9 +83,9 @@ damageDice = chosenWeapon.get('THDice') if A.get('versatile', A.get('vers')) and
 damageType = chosenWeapon.get('damage')
 weaponType = chosenWeapon.get('type')
 weaponDesc = chosenWeapon.get('desc')
-addEffect =f'''{proficiencyBonus+abilityBonus} {bonus} {magicalBonus}|{damageDice} + {abilityBonus} {magicalBonus} ['{"magical " if magicalBonus else ""}{'silvered ' if chosenMetal == 'Silver' else ''}{damageType}'] {additionalDamage}|{weaponType}, {weaponDesc}'''
+addEffect =f'''{proficiencyBonus+abilityBonus} {bonus} {magicalBonus}|{damageDice} + {abilityBonus} {magicalBonus} [{"magical " if magicalBonus else ""}{'silvered ' if chosenMetal == 'Silver' else ''}{damageType}] {additionalDamage}|{weaponType}, {weaponDesc}'''
 text += f''' -title "{target} equips {vowls} {itemName}!" -desc "{target} is now wielding {vowls} {itemName}! {target} can now make attacks with said weapon!" -f "Proficiency|{proficiencyBonusText}" -f "{'Magical ' if magicalBonus else ''}{f"""{magicalBonus.replace(' ','')} """ if magicalBonus else ''}{chosenWeapon.get('name')} Details|**To Hit**: +{proficiencyBonus+abilityBonus} {bonus} {magicalBonus} {N}**Damage**: {damageDice} + {abilityBonus} {magicalBonus} [{'magical ' if bonus else ''}{'silvered ' if chosenMetal == 'Silver' else ''}{damageType}] {additionalDamage} {N}{weaponType}, {weaponDesc}{f', {chosenMetalText}' if chosenMetal else ''}."'''
-if c: 
+if c and C != character(): 
 	if C.get_effect(chosenWeapon.get('name')):
 		text += f''' -f "Was not Equipped|{target} already has {vowls} {chosenWeapon.get('name')} equipped." -footer "!equip 'Weapon Name' | Adalbär#3333"'''
 	else:

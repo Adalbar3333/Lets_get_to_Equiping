@@ -1,13 +1,17 @@
-emmbed 
+embed 
 <drac2>
 A = argparse(&ARGS&)
 text = f''' -footer "{ctx.prefix}{ctx.alias} | Adalbär#3333 " '''
 
 if combat():
 	c = combat()
-	target = A.last('t') if c else 'me'
-	C = c.get_combatant(target) if target != 'me' else c.me
-	ReqEffect = A.last("effect", A.last("e")) if "effect" A or "e" in A else '&1&'
+	target = None
+	if A.get('t'):
+		target = A.last('t')
+	else:
+		target = character().name
+	C = c.get_combatant(target)
+	ReqEffect = A.last("effect", A.last("e")) if "effect" in A or "e" in A else '&1&'
 	chosenEffect = None
 	for effect in C.effects:
 		if ReqEffect and ReqEffect.lower() in effect.name.lower():
@@ -15,11 +19,13 @@ if combat():
 			break
 	if chosenEffect:
 		C.remove_effect(chosenEffect)
-		text += f''' -title "{target} unequipped the {chosenEffect}!" -desc "{target} no longer has a {chosenEffect} on them. They no longer have the benefits of said item."'''
+		vowls = "an" if "aeiou" in chosenEffect.name[0] else "a"
+		text += f''' -title "{target} unequipped {vowls} {chosenEffect.name}!" -desc "{target} no longer has a {chosenEffect} on them. They no longer have the benefits of said item."'''
+		return text
 	else: 
-		vowls = "an" if "aeiou" in chosenEffect[0] else "a"
-		text += f''' -title "{target} does not have {vowls} {chosenEffect} equipped!" -f "{target} cannot unequipped armor or weapons if they do not have it equipped!"'''
-	return text
+		vowls = "an" if "aeiou" in chosenEffect.name[0] else "a"
+		text += f''' -title "{target} does not have {vowls} {chosenEffect.name} equipped!" -desc "{target} cannot unequipped armor or weapons if they do not have it equipped!"'''
+		return text
 else:
 	text += f''' -title "There is no Initiative!" -desc "We cannot unequip something from you, or a target, if they don't exist within an initiative!"'''
 return text
