@@ -13,7 +13,7 @@ This is a DM's, and Players tool to set up weapons that a monster generally does
 ### Homebrew svar for Weapons
 ```!svar homebrewWeapon
 [{
-    "fName":"Frostbrand",
+    "name":"Frostbrand",
     "dice": "2d6 [cold] + 1d8",
     "THDice": "2d6 [cold] + 1d10",
     "damage": "slashing",
