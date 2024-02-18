@@ -22,6 +22,8 @@ This is a DM's, and Players tool to set up weapons that a monster generally does
     "desc": "Versatile (1d10)"
 }]
 ```
+Additionally, you can create a GVAR and put the GVAR code in the svar instead:
+```!svar homebrewWeapon Insert-Gvar-Code```
 ### There is only one required argument ->
 ##### "Weapon Name" | -equip "Weapon Name" | -e "Weapon Name" is used for selecting the weapon you wish to use.
 ### Additional Arguments:
