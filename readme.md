@@ -38,7 +38,7 @@ This is a DM's, and Players tool to set up weapons that a monster generally does
 ### Equipping Armor and Shields
 This is a DM's, and Players tool to set up armor and shields that a monster generally does not have. For example, with !equip armor, you can have a goblin in a set of plate mail!
 ### Homebrew svar for Armor
-```
+```json
 !svar homebrewArmor
 [{
         "fName":"Dwarvish Plate",
