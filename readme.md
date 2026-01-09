@@ -11,7 +11,8 @@ Say you want to have a goblin in magical full plate wielding a Glaive, well now 
 ### Equiping Weapons
 This is a DM's, and Players tool to set up weapons that a monster generally does not have. For example, with !equip, you can have a goblin with a Flame Tongue!
 ### Homebrew svar for Weapons
-```!svar homebrewWeapon
+```json
+!svar homebrewWeapon
 [{
     "fName":"Frostbrand",
     "dice": "2d6 [cold] + 1d8",
